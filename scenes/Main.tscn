@@ -27,11 +27,135 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.4, 0.55, 0.6, 0.08)
 
+
+[node name="ArtLayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="BusBackgroundDay1" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.22, 0.25, 0.22)
+
+[node name="BusBackgroundDay2" type="ColorRect" parent="ArtLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.23, 0.25, 0.16)
+
+[node name="BusBackgroundDay3" type="ColorRect" parent="ArtLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.22, 0.24, 0.26, 0.12)
+
 [node name="Root" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+
+
+[node name="Student1Normal" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+offset_left = 180.0
+offset_top = 180.0
+offset_right = 300.0
+offset_bottom = 420.0
+color = Color(0.8, 0.8, 0.8, 0.08)
+
+[node name="Student1Changed" type="ColorRect" parent="ArtLayer"]
+visible = false
+layout_mode = 1
+offset_left = 180.0
+offset_top = 180.0
+offset_right = 300.0
+offset_bottom = 420.0
+color = Color(0.95, 0.9, 0.6, 0.12)
+
+[node name="Student2Normal" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+offset_left = 330.0
+offset_top = 180.0
+offset_right = 450.0
+offset_bottom = 420.0
+color = Color(0.8, 0.8, 0.8, 0.08)
+
+[node name="Student2Changed" type="ColorRect" parent="ArtLayer"]
+visible = false
+layout_mode = 1
+offset_left = 330.0
+offset_top = 180.0
+offset_right = 450.0
+offset_bottom = 420.0
+color = Color(0.8, 0.55, 0.55, 0.12)
+
+[node name="Student3Normal" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+offset_left = 480.0
+offset_top = 180.0
+offset_right = 600.0
+offset_bottom = 420.0
+color = Color(0.8, 0.8, 0.8, 0.08)
+
+[node name="Student3Changed" type="ColorRect" parent="ArtLayer"]
+visible = false
+layout_mode = 1
+offset_left = 480.0
+offset_top = 180.0
+offset_right = 600.0
+offset_bottom = 420.0
+color = Color(0.7, 0.6, 0.9, 0.12)
+
+[node name="ColorOverlayBlue" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.43, 0.56, 0.79, 0.03)
+
+[node name="ColorOverlayRed" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.75, 0.35, 0.35, 0.02)
+
+[node name="ColorOverlayYellow" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.8, 0.7, 0.5, 0.02)
+
+[node name="ColorOverlayGreen" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.5, 0.7, 0.58, 0.03)
+
+[node name="ColorOverlayPurple" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.56, 0.45, 0.71, 0.025)
+
+[node name="ColorOverlayGray" type="ColorRect" parent="ArtLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.5, 0.5, 0.56, 0.08)
 
 [node name="TitleLayer" type="VBoxContainer" parent="Root"]
 layout_mode = 1
@@ -86,6 +210,40 @@ horizontal_alignment = 1
 [node name="NextButton" type="Button" parent="Root/IntroLayer/Margin/V"]
 layout_mode = 2
 text = "버스 안을 바라본다"
+
+
+[node name="DayIntroLayer" type="PanelContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = -130.0
+offset_right = 420.0
+offset_bottom = 130.0
+
+[node name="Margin" type="MarginContainer" parent="Root/DayIntroLayer"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="V" type="VBoxContainer" parent="Root/DayIntroLayer/Margin"]
+layout_mode = 2
+
+[node name="Text" type="Label" parent="Root/DayIntroLayer/Margin/V"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+
+[node name="NextButton" type="Button" parent="Root/DayIntroLayer/Margin/V"]
+disabled = true
+layout_mode = 2
+text = "오늘의 하교길로 돌아간다"
 
 [node name="BusLayer" type="PanelContainer" parent="Root"]
 visible = false
@@ -175,6 +333,9 @@ theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
 [node name="V" type="VBoxContainer" parent="Root/ColorLayer/Margin"]
+layout_mode = 2
+
+[node name="Prompt" type="Label" parent="Root/ColorLayer/Margin/V"]
 layout_mode = 2
 
 [node name="Cards" type="VBoxContainer" parent="Root/ColorLayer/Margin/V"]
