@@ -52,7 +52,7 @@ func _show_day_intro() -> void:
 func _show_bus() -> void:
 	_show_only(bus_layer)
 	day_label.text = "%d일차 하교길" % state.day
-	guide_label.text = state.day == 5 ? "마지막 선택: 학생 한 명과 색 하나를 고른다." : "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points
+	guide_label.text = "마지막 선택: 학생 한 명과 색 하나를 고른다." if state.day == 5 else "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points
 	observe_label.text = "이상한 안내방송: 이번 정류장은… 오늘입니다. 내리실 문은 없습니다."
 	_refresh_bus_actions()
 
@@ -85,7 +85,7 @@ func _on_area_selected(area_id: String) -> void:
 	if clue.is_empty():
 		state.spend_action()
 		observe_label.text = "기억에 남은 장면은 있었지만, 새 단서는 찾지 못했다."
-		guide_label.text = state.action_points > 0 ? "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points : "오늘은 더 바라볼 수 없다."
+		guide_label.text = "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points if state.action_points > 0 else "오늘은 더 바라볼 수 없다."
 		return
 	state.spend_action()
 	var clue_id: String = str(clue.get("id", ""))
@@ -97,7 +97,7 @@ func _on_area_selected(area_id: String) -> void:
 		audio.play_sfx("ui_select_sfx")
 	else:
 		observe_label.text = "기억에 남은 장면: %s\n이미 본 마음이었지만, 오늘은 다르게 남았다." % clue_title
-	guide_label.text = state.action_points > 0 ? "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points : "오늘은 더 바라볼 수 없다."
+	guide_label.text = "오늘, 더 바라볼 수 있는 마음: %d" % state.action_points if state.action_points > 0 else "오늘은 더 바라볼 수 없다."
 
 func _find_clue_for(area_id: String) -> Dictionary:
 	for clue_data in data.clues:
