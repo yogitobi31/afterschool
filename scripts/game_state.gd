@@ -1,53 +1,50 @@
 extends Node
 class_name GameState
 
-const MAX_DAY := 3
-const SMALL_CHANGE_BY_COLOR := {
-	"blue": "어제보다 숨이 조금 느려진 것 같았다.",
-	"green": "그 아이는 창밖을 피하지 않고 바라보고 있었다.",
-	"red": "손끝에 힘이 들어가 있었다. 도망만 치는 표정은 아니었다.",
-	"purple": "가방 속 노트가 조금 열려 있었다.",
-	"yellow": "웃음이 조금 가벼워졌다. 억지로 만든 표정은 아니었다.",
-	"gray": "아무 일도 일어나지 않은 것 같았지만, 침묵의 모양은 조금 달랐다."
-}
+const MAX_DAY: int = 5
+const DAILY_ACTION_POINTS: int = 2
 
 var day: int = 1
-var selected_student_id: String = ""
-var player_choices: Array[Dictionary] = []
-var color_counts: Dictionary = {}
+var action_points: int = DAILY_ACTION_POINTS
+var discovered_clues: Array[String] = []
+var discovered_by_student: Dictionary = {}
+var final_choice: Dictionary = {}
 
 func reset() -> void:
 	day = 1
-	selected_student_id = ""
-	player_choices.clear()
-	color_counts.clear()
+	action_points = DAILY_ACTION_POINTS
+	discovered_clues.clear()
+	discovered_by_student.clear()
+	final_choice.clear()
 
-func record_choice(student_id: String, color_id: String) -> void:
-	selected_student_id = student_id
-	player_choices.append({"day": day, "student_id": student_id, "color_id": color_id})
-	color_counts[color_id] = int(color_counts.get(color_id, 0)) + 1
+func start_day() -> void:
+	action_points = DAILY_ACTION_POINTS
 
-func small_change_for_today(student_id: String) -> String:
-	for choice_data in player_choices:
-		var choice: Dictionary = choice_data
-		var choice_student_id: String = str(choice.get("student_id", ""))
-		var choice_day: int = int(choice.get("day", 0))
-		if choice_student_id == student_id and choice_day == day - 1:
-			var color_id: String = str(choice.get("color_id", "gray"))
-			return str(SMALL_CHANGE_BY_COLOR.get(color_id, ""))
-	return ""
+func can_act() -> bool:
+	return day < MAX_DAY and action_points > 0
+
+func spend_action() -> void:
+	action_points = max(action_points - 1, 0)
+
+func mark_clue_discovered(student_id: String, clue_id: String) -> bool:
+	if discovered_clues.has(clue_id):
+		return false
+	discovered_clues.append(clue_id)
+	if not discovered_by_student.has(student_id):
+		discovered_by_student[student_id] = []
+	var student_clues: Array = discovered_by_student.get(student_id, []) as Array
+	student_clues.append(clue_id)
+	discovered_by_student[student_id] = student_clues
+	return true
+
+func is_clue_discovered(clue_id: String) -> bool:
+	return discovered_clues.has(clue_id)
 
 func advance_day() -> bool:
 	day += 1
+	if day <= MAX_DAY:
+		start_day()
 	return day > MAX_DAY
 
-func top_color_id() -> String:
-	var top: String = "blue"
-	var top_count: int = -1
-	for color_id_value in color_counts.keys():
-		var color_id: String = str(color_id_value)
-		var count: int = int(color_counts.get(color_id, 0))
-		if count > top_count:
-			top = color_id
-			top_count = count
-	return top
+func record_final_choice(student_id: String, color_id: String, result_type: String) -> void:
+	final_choice = {"student_id": student_id, "color_id": color_id, "result_type": result_type}
