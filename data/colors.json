@@ -1,0 +1,8 @@
+[
+  {"id":"blue","name":"파랑","hex":"#6e89c7","meaning":"오래 버틴 마음이 잠깐 숨을 고르는 색"},
+  {"id":"red","name":"빨강","hex":"#b95a5a","meaning":"말하지 못한 진심이 밖으로 나와도 괜찮은 색"},
+  {"id":"yellow","name":"노랑","hex":"#c7b36e","meaning":"밝은 척으로 지친 마음을 잠시 내려놓는 색"},
+  {"id":"green","name":"초록","hex":"#6ea87d","meaning":"다시 시작해도 괜찮다고 말하는 색"},
+  {"id":"purple","name":"보라","hex":"#8e79b5","meaning":"남들이 모르는 꿈을 아직 품고 있는 색"},
+  {"id":"gray","name":"회색","hex":"#7f828a","meaning":"너무 많은 감정을 잠깐 쉬게 하는 색"}
+]
