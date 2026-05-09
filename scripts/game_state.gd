@@ -28,9 +28,13 @@ func record_choice(student_id: String, color_id: String) -> void:
 	color_counts[color_id] = int(color_counts.get(color_id, 0)) + 1
 
 func small_change_for_today(student_id: String) -> String:
-	for choice in player_choices:
-		if choice.student_id == student_id and int(choice.day) == day - 1:
-			return SMALL_CHANGE_BY_COLOR.get(choice.color_id, "")
+	for choice_data in player_choices:
+		var choice: Dictionary = choice_data
+		var choice_student_id: String = str(choice.get("student_id", ""))
+		var choice_day: int = int(choice.get("day", 0))
+		if choice_student_id == student_id and choice_day == day - 1:
+			var color_id: String = str(choice.get("color_id", "gray"))
+			return str(SMALL_CHANGE_BY_COLOR.get(color_id, ""))
 	return ""
 
 func advance_day() -> bool:
@@ -38,10 +42,12 @@ func advance_day() -> bool:
 	return day > MAX_DAY
 
 func top_color_id() -> String:
-	var top := "blue"
-	var top_count := -1
-	for color_id in color_counts.keys():
-		if color_counts[color_id] > top_count:
+	var top: String = "blue"
+	var top_count: int = -1
+	for color_id_value in color_counts.keys():
+		var color_id: String = str(color_id_value)
+		var count: int = int(color_counts.get(color_id, 0))
+		if count > top_count:
 			top = color_id
-			top_count = color_counts[color_id]
+			top_count = count
 	return top

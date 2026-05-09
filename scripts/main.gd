@@ -60,9 +60,9 @@ const SMALL_CHANGE_BY_COLOR := {
 @onready var color_overlay_purple: ColorRect = $ArtLayer/ColorOverlayPurple
 @onready var color_overlay_gray: ColorRect = $ArtLayer/ColorOverlayGray
 
-var data := DataManager.new()
-var state := GameState.new()
-var audio := AudioManager.new()
+var data: DataManager = DataManager.new()
+var state: GameState = GameState.new()
+var audio: AudioManager = AudioManager.new()
 var current_student: Dictionary = {}
 
 func _ready() -> void:
@@ -88,7 +88,7 @@ func _on_start_pressed() -> void:
 
 func show_day_intro(day: int) -> void:
 	_show_only(day_intro_layer)
-	day_intro_label.text = DAY_INTRO_TEXTS.get(day, "")
+	day_intro_label.text = str(DAY_INTRO_TEXTS.get(day, ""))
 	audio.fade_bgm(0.6, -14.0)
 	await get_tree().create_timer(1.7).timeout
 	day_intro_next_button.disabled = false
@@ -100,28 +100,37 @@ func _show_bus() -> void:
 	audio.play_ambience("bus_engine_ambience")
 	day_intro_next_button.disabled = true
 	day_label.text = "%d일차 하교길" % state.day
-	guide_label.text = DAY_GUIDES.get(state.day, "오늘, 누구의 마음을 바라볼까.")
+	guide_label.text = str(DAY_GUIDES.get(state.day, "오늘, 누구의 마음을 바라볼까."))
 	observe_label.text = "버스 안 공기는 조용히 흔들리고 있었다."
 	for child in student_buttons.get_children():
 		child.queue_free()
-	for student in data.students:
-		var b := Button.new()
-		b.text = "%s (%s)" % [student.name, student.outer_color]
+	for student_data in data.students:
+		var student: Dictionary = student_data as Dictionary
+		var b: Button = Button.new()
+		var student_name: String = str(student.get("name", "이름 없는 학생"))
+		var outer_color: String = str(student.get("outer_color", ""))
+		b.text = "%s (%s)" % [student_name, outer_color]
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.pressed.connect(func(s = student): _select_student(s))
 		student_buttons.add_child(b)
 
 func _select_student(student: Dictionary) -> void:
 	current_student = student
-	var observation := student.day_observations[state.day - 1]
-	var small_change := state.small_change_for_today(student.id)
+	var observations: Array = student.get("day_observations", [])
+	if observations.is_empty():
+		observe_label.text = "아직 관찰할 수 있는 단서가 없었다."
+		return
+	var day_index: int = clamp(state.day - 1, 0, observations.size() - 1)
+	var observation: String = str(observations[day_index])
+	var student_id: String = str(student.get("id", "unknown"))
+	var small_change: String = state.small_change_for_today(student_id)
 	if not small_change.is_empty():
 		observation += "\n" + small_change
 	observe_label.text = observation
 	guide_label.text = "조금 더 살펴본다"
-	_set_student_change_slot(student.id, not small_change.is_empty())
+	_set_student_change_slot(student_id, not small_change.is_empty())
 	if not $Root/BusLayer/Margin/V.has_node("TalkNow"):
-		var talk_btn := Button.new()
+		var talk_btn: Button = Button.new()
 		talk_btn.name = "TalkNow"
 		talk_btn.text = "그 아이에게 말을 건넨다"
 		talk_btn.pressed.connect(_show_talk)
@@ -129,8 +138,11 @@ func _select_student(student: Dictionary) -> void:
 
 func _show_talk() -> void:
 	_show_only(talk_layer)
-	talk_name_label.text = current_student.name
-	talk_text_label.text = current_student.talk["day%d" % state.day]
+	var student_name: String = str(current_student.get("name", "이름 없는 학생"))
+	talk_name_label.text = student_name
+	var talks: Dictionary = current_student.get("talk", {}) as Dictionary
+	var talk_key: String = "day%d" % state.day
+	talk_text_label.text = str(talks.get(talk_key, "..."))
 
 func _show_color_choice() -> void:
 	_show_only(color_layer)
@@ -139,25 +151,34 @@ func _show_color_choice() -> void:
 	color_prompt_label.text = "어떤 색을 조심스럽게 건넬까."
 	for child in color_cards.get_children():
 		child.queue_free()
-	for color_data in data.colors:
-		var card := Button.new()
-		card.text = "%s\n%s" % [color_data.name, color_data.meaning]
+	for color_item in data.colors:
+		var color_data: Dictionary = color_item as Dictionary
+		var card: Button = Button.new()
+		var color_name: String = str(color_data.get("name", "이름 없는 색"))
+		var color_meaning: String = str(color_data.get("meaning", ""))
+		card.text = "%s\n%s" % [color_name, color_meaning]
 		card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card.custom_minimum_size = Vector2(0, 72)
-		card.modulate = Color.from_string(color_data.hex, Color.WHITE)
+		var color_hex: String = str(color_data.get("hex", "#ffffff"))
+		card.modulate = Color.from_string(color_hex, Color.WHITE)
 		card.pressed.connect(func(c = color_data): _choose_color(c))
 		color_cards.add_child(card)
 
 func _choose_color(color_data: Dictionary) -> void:
-	state.record_choice(current_student.id, color_data.id)
+	var student_id: String = str(current_student.get("id", "unknown"))
+	var color_id: String = str(color_data.get("id", "gray"))
+	state.record_choice(student_id, color_id)
 	audio.play_sfx("ui_select_sfx")
 	audio.set_ambience_volume(0.0)
 	_show_only(result_layer)
-	result_label.text = "%s에게 %s을(를) 건넸다.\n%s" % [current_student.name, color_data.name, _reaction_text(color_data.id)]
+	var student_name: String = str(current_student.get("name", "그 아이"))
+	var color_name: String = str(color_data.get("name", "색"))
+	result_label.text = "%s에게 %s을(를) 건넸다.\n%s" % [student_name, color_name, _reaction_text(color_id)]
 	$Root/ResultLayer/Margin/V/NextButton.text = "다음 하교길"
 
 func _reaction_text(color_id: String) -> String:
-	if current_student.hint_colors.has(color_id):
+	var hint_colors: Array = current_student.get("hint_colors", [])
+	if hint_colors.has(color_id):
 		return "그 아이의 침묵이 아주 조금 덜 무거워졌다."
 	return "정답은 없어도, 바라본 마음은 남는다."
 
@@ -172,8 +193,8 @@ func _show_ending() -> void:
 	_show_only(ending_layer)
 	audio.play_bgm("ending_bgm")
 	audio.play_ambience("rain_ambience")
-	var top := state.top_color_id()
-	var ending_tail := SMALL_CHANGE_BY_COLOR.get(top, SMALL_CHANGE_BY_COLOR["gray"])
+	var top: String = state.top_color_id()
+	var ending_tail: String = str(SMALL_CHANGE_BY_COLOR.get(top, SMALL_CHANGE_BY_COLOR["gray"]))
 	ending_label.text = "버스는 여전히 비 오는 길을 달리고 있었다.\n학원가의 불빛도, 젖은 창문도 그대로였다.\n하지만 오늘,\n누군가의 마음은 아주 조금 덜 혼자였다.\n%s" % ending_tail
 
 func _restart() -> void:
@@ -182,8 +203,10 @@ func _restart() -> void:
 	audio.play_bgm("title_bgm")
 
 func _apply_day_tone() -> void:
-	var hint_alpha := 0.03 + float(state.day - 1) * 0.05
-	backdrop.color = [Color(0.09, 0.11, 0.15), Color(0.1, 0.12, 0.16), Color(0.11, 0.13, 0.17)][state.day - 1]
+	var hint_alpha: float = 0.03 + float(state.day - 1) * 0.05
+	var day_colors: Array[Color] = [Color(0.09, 0.11, 0.15), Color(0.1, 0.12, 0.16), Color(0.11, 0.13, 0.17)]
+	var day_index: int = clamp(state.day - 1, 0, day_colors.size() - 1)
+	backdrop.color = day_colors[day_index]
 	bus_background_day1.visible = state.day == 1
 	bus_background_day2.visible = state.day == 2
 	bus_background_day3.visible = state.day == 3
@@ -200,5 +223,6 @@ func _set_student_change_slot(student_id: String, changed: bool) -> void:
 	student_3_changed.visible = changed and student_id == "dream_student"
 
 func _show_only(target: Control) -> void:
-	for layer in [title_layer, intro_layer, day_intro_layer, bus_layer, talk_layer, color_layer, result_layer, ending_layer]:
+	var layers: Array[Control] = [title_layer, intro_layer, day_intro_layer, bus_layer, talk_layer, color_layer, result_layer, ending_layer]
+	for layer in layers:
 		layer.visible = layer == target
